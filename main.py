@@ -2,32 +2,44 @@ import requests
 import json
 from datetime import datetime, timedelta
 
-url = "https://api.hh.ru/vacancies"
 
-popular_languages = [
-    "Python",
-    "JavaScript",
-    "Java",
-    "C#",
-    "PHP",
-    "C",
-    "C++",
-    "CSS",
-    "Go",
-]
+def predict_rub_salary(vacancy):
+    salary = vacancy['salary']
 
-language_vacancies = {}
+    if not salary or salary['currency'] != 'RUR':
+        return None
 
-for language in popular_languages:
+    if salary['from'] and salary['to']:
+        return (salary['from'] + salary['to']) / 2
+
+    if salary['from']:
+        return salary['from'] * 1.2
+
+    if salary['to']:
+        return salary['to'] * 0.8
+
+    return None
+
+
+def main():
+    url = "https://api.hh.ru/vacancies"
+
     params = {
-        "text": f"Программист {language}",
+        "text": "Программист Python",
         "area": "1",
+        "per_page": 20,
     }
 
     response = requests.get(url, params=params)
     response.raise_for_status()
     vacancies = response.json()
-    language_vacancies[language] = vacancies['found']
 
-print(language_vacancies)
+    for item in vacancies["items"]:
+        expected_salary = predict_rub_salary(item)
+        print(expected_salary)
+
+
+if __name__ == '__main__':
+    main()
+
 
