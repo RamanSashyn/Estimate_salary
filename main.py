@@ -4,25 +4,30 @@ from datetime import datetime, timedelta
 
 url = "https://api.hh.ru/vacancies"
 
-date_from = (datetime.now() - timedelta(days=30)).strftime("%Y-%m-%d")
+popular_languages = [
+    "Python",
+    "JavaScript",
+    "Java",
+    "C#",
+    "PHP",
+    "C",
+    "C++",
+    "CSS",
+    "Go",
+]
 
-params = {
-    "text": "Программист",
-    "area": "1",
-    "date_from": date_from,
-    "per_page": 20,
-}
+language_vacancies = {}
 
-response = requests.get(url, params=params)
-response.raise_for_status()
-vacancies = response.json()
-print(f"Найдено вакансий: {vacancies['found']}")
+for language in popular_languages:
+    params = {
+        "text": f"Программист {language}",
+        "area": "1",
+    }
 
-for item in vacancies['items']:
-    published_at = datetime.strptime(item['published_at'], "%Y-%m-%dT%H:%M:%S%z")
-    print(f"Название: {item['name']}")
-    print(f"Компания: {item['employer']['name']}")
-    print(f"Город: {item['area']['name']}")
-    print(f"Дата публикации: {published_at.strftime('%Y-%m-%d %H:%M:%S %Z')}")
-    print(f"Ссылка: {item['alternate_url']}")
-    print("-" * 40)
+    response = requests.get(url, params=params)
+    response.raise_for_status()
+    vacancies = response.json()
+    language_vacancies[language] = vacancies['found']
+
+print(language_vacancies)
+
