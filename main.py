@@ -1,5 +1,4 @@
 import requests
-import json
 from terminaltables import AsciiTable
 
 
@@ -171,10 +170,10 @@ def main():
     languages = ['Python', 'Java', "JavaScript", "Go", "PHP", "C", "C#", "C++", "1c"]
 
     hh_statistics = calculate_salary_for_hh(languages)
-    print_table(hh_statistics, "HeadHunter")
+    print_table(hh_statistics, "HeadHunter Moscow")
 
     sj_statistics = calculate_salary_for_sj(languages)
-    print_table(sj_statistics, "SuperJob")
+    print_table(sj_statistics, "SuperJob Moscow")
 
 
 if __name__ == '__main__':
