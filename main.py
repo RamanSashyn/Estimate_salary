@@ -21,18 +21,30 @@ def predict_rub_salary(vacancy):
     return None
 
 
-def get_vacancies_for_language(language):
+def get_vacancies_for_language(language, per_page=100):
     url = "https://api.hh.ru/vacancies"
 
     params = {
         "text": f"Программист {language}",
         "area": "1",
-        "per_page": 20,
+        "per_page": per_page,
     }
 
-    response = requests.get(url, params=params)
-    response.raise_for_status()
-    return response.json()
+    vacancies = []
+    page = 0
+
+    while True:
+        params["page"] = page
+        response = requests.get(url, params=params)
+        response.raise_for_status()
+        vacancies_data = response.json()
+
+        vacancies.extend(vacancies_data['items'])
+        if page >= vacancies_data['pages'] - 1:
+            break
+        page += 1
+
+    return{"found": vacancies_data['found'], "items": vacancies}
 
 
 def calculate_salary(languages):
@@ -63,7 +75,7 @@ def calculate_salary(languages):
 def main():
     languages = ['Python', 'Java', "JavaScript", "Go", "PHP"]
     statistics = calculate_salary(languages)
-    print(statistics)
+    print(json.dumps(statistics, indent=4, ensure_ascii=False))
 
 
 if __name__ == '__main__':
