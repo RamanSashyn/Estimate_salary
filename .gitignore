@@ -1,0 +1,11 @@
+# Секреты
+.env
+# Конфигурации IDE
+venv/
+.vscode/
+# Системные файлы
+Thumbs.db
+.DS_Store
+# Временные файлы Python
+*.pyc
+__pycache__/
