@@ -115,7 +115,7 @@ def fetch_and_analyze_hh_salaries(languages):
 
         average_salary_hh = (
             int(total_salary_hh / vacancies_processed_hh)
-            if vacancies_processed_hh > 0
+            if vacancies_processed_hh
             else None
         )
 
@@ -146,7 +146,7 @@ def fetch_and_analyze_sj_salaries(languages, api_key):
 
         average_salary_sj = (
             int(total_salary_sj / vacancies_processed_sj)
-            if vacancies_processed_sj > 0
+            if vacancies_processed_sj
             else None
         )
 
@@ -169,12 +169,12 @@ def print_table(statistics, platform):
         ]
     ]
 
-    for language, data in statistics.items():
+    for language, statistics_data in statistics.items():
         row = [
             language,
-            data["vacancies_found"],
-            data["vacancies_processed"],
-            data["average_salary"],
+            statistics_data["vacancies_found"],
+            statistics_data["vacancies_processed"],
+            statistics_data["average_salary"],
         ]
         table_data.append(row)
 
