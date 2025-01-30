@@ -94,7 +94,7 @@ def get_vacancies_for_language_from_superjob(language, api_key):
     return all_vacancies, vacancies_data["total"]
 
 
-def calculate_salary_for_hh(languages):
+def fetch_and_analyze_hh_salaries(languages):
     salary_statistics = {}
 
     for language in languages:
@@ -124,7 +124,7 @@ def calculate_salary_for_hh(languages):
     return salary_statistics
 
 
-def calculate_salary_for_sj(languages, api_key):
+def fetch_and_analyze_sj_salaries(languages, api_key):
     salary_statistics = {}
 
     for language in languages:
@@ -196,10 +196,10 @@ def main():
         "1c",
     ]
 
-    hh_statistics = calculate_salary_for_hh(languages)
+    hh_statistics = fetch_and_analyze_hh_salaries(languages)
     print_table(hh_statistics, "HeadHunter Moscow")
 
-    sj_statistics = calculate_salary_for_sj(languages, api_superjob)
+    sj_statistics = fetch_and_analyze_sj_salaries(languages, api_superjob)
     print_table(sj_statistics, "SuperJob Moscow")
 
 
