@@ -4,6 +4,11 @@ from dotenv import load_dotenv
 from terminaltables import AsciiTable
 
 
+MOSCOW_AREA_ID = '1'
+MOSCOW_TOWN_ID = 4
+VACANCIES_PER_PAGE = 100
+
+
 def predict_salary(salary_from, salary_to):
     if salary_from and salary_to:
         return (salary_from + salary_to) / 2
@@ -37,13 +42,13 @@ def predict_rub_salary_sj(vacancy):
     return predict_salary(payment_from, payment_to)
 
 
-def get_vacancies_for_language_from_hh(language, per_page=100):
+def get_vacancies_for_language_from_hh(language):
     url = "https://api.hh.ru/vacancies"
 
     params = {
         "text": f"Программист {language}",
-        "area": "1",
-        "per_page": per_page,
+        "area": MOSCOW_AREA_ID,
+        "per_page": VACANCIES_PER_PAGE,
     }
 
     all_vacancies = []
@@ -53,14 +58,14 @@ def get_vacancies_for_language_from_hh(language, per_page=100):
         params["page"] = page
         response = requests.get(url, params=params)
         response.raise_for_status()
-        vacancies_data = response.json()
+        vacancies_response = response.json()
 
-        all_vacancies.extend(vacancies_data["items"])
-        if page >= vacancies_data["pages"] - 1 or page > 2:
+        all_vacancies.extend(vacancies_response["items"])
+        if page >= vacancies_response["pages"] - 1:
             break
         page += 1
 
-    return {"found": vacancies_data["found"], "items": all_vacancies}
+    return vacancies_response["found"], all_vacancies
 
 
 def get_vacancies_for_language_from_superjob(language, api_key):
@@ -70,9 +75,9 @@ def get_vacancies_for_language_from_superjob(language, api_key):
     }
 
     params = {
-        "town": 4,
+        "town": MOSCOW_TOWN_ID,
         "keyword": language,
-        "count": 100,
+        "count": VACANCIES_PER_PAGE,
     }
 
     all_vacancies = []
@@ -82,28 +87,27 @@ def get_vacancies_for_language_from_superjob(language, api_key):
         params["page"] = page
         response = requests.get(url, headers=headers, params=params)
         response.raise_for_status()
-        vacancies_data = response.json()
+        vacancies_response = response.json()
 
-        all_vacancies.extend(vacancies_data["objects"])
+        all_vacancies.extend(vacancies_response["objects"])
 
-        if not vacancies_data.get("more", False) or page > 2:
+        if not vacancies_response.get("more", False):
             break
 
         page += 1
 
-    return all_vacancies, vacancies_data["total"]
+    return all_vacancies, vacancies_response["total"]
 
 
 def fetch_and_analyze_hh_salaries(languages):
     salary_statistics = {}
 
     for language in languages:
-        vacancies_data_hh = get_vacancies_for_language_from_hh(language)
-        vacancies_found_hh = vacancies_data_hh["found"]
+        vacancies_found_hh, vacancies_list_hh = get_vacancies_for_language_from_hh(language)
         vacancies_processed_hh = 0
         total_salary_hh = 0
 
-        for vacancy in vacancies_data_hh["items"]:
+        for vacancy in vacancies_list_hh:
             salary = predict_rub_salary_hh(vacancy)
             if salary:
                 vacancies_processed_hh += 1
