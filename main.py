@@ -182,7 +182,7 @@ def print_table(statistics, platform):
 
 def main():
     load_dotenv()
-    API_SUPERJOB = os.getenv("SUPERJOB_API_KEY")
+    api_superjob = os.getenv("SUPERJOB_API_KEY")
 
     languages = [
         "Python",
@@ -199,7 +199,7 @@ def main():
     hh_statistics = calculate_salary_for_hh(languages)
     print_table(hh_statistics, "HeadHunter Moscow")
 
-    sj_statistics = calculate_salary_for_sj(languages, API_SUPERJOB)
+    sj_statistics = calculate_salary_for_sj(languages, api_superjob)
     print_table(sj_statistics, "SuperJob Moscow")
 
 
